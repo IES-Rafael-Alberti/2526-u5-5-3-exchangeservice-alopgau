@@ -401,16 +401,25 @@ Las preguntas están formuladas para que **mires tu propio código**, justifique
 
 #### 🔹 1) CE b) Se han definido casos de prueba
 
-**Pregunta:**
+**Pregunta:** Los 2 primeros test cubren clases invalidas, el primero valida si la cantidad de dinero es negativa, el 2do valida si la moneda tiene la longitud valida, y el 3º verifica si el sistema es case-sensitive pasando monedas en minuscula, que como pasan los test diriamis que son clases perfectamente validas 
+Todos forman parte de la validación de entrada, siendo muy representativos de esta categoria ya que en la misma se experimenta con distintas entradas del usuario, permitiendonos ver si el programa las maneja correctamente.
 
 Identifica **al menos 3 casos de prueba de tu batería** y explica:
 
 * Qué **clase de equivalencia** cubre cada uno (válida o inválida).
+  
+  
 * Qué **condición concreta del servicio** estás validando (validación, tasa directa, conversión cruzada, etc.).
 * Por qué ese caso es representativo dentro del conjunto de pruebas.
+  Todos estos casos nos dan información sobre como el programa cubre las entradas del usuario 
 
 Incluye enlaces a los tests correspondientes.
 
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-alopgau/blob/dbaa3024453404e62a9a3e8cb32dd660336ad4f8/src/test/kotlin/ValidacionEntrada.kt#L36-L41
+
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-alopgau/blob/dbaa3024453404e62a9a3e8cb32dd660336ad4f8/src/test/kotlin/ValidacionEntrada.kt#L43-L48
+
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-alopgau/blob/dbaa3024453404e62a9a3e8cb32dd660336ad4f8/src/test/kotlin/ValidacionEntrada.kt#L68-L75
 
 #### 🔹 2) CE f) Se han efectuado pruebas unitarias de clases y funciones
 
@@ -419,17 +428,21 @@ Incluye enlaces a los tests correspondientes.
 Selecciona uno de tus tests y explica cómo se trata de una **prueba unitaria real sobre `ExchangeService`**:
 
 * Qué método estás probando exactamente.
+ En este test pruebo si el exchange, al pasarle la misma moneda en origen y destino, llama al metodo rate del provider, lo que indicaria que hace un cálculo innecesario.  
 * Cómo has aislado la lógica de la clase respecto a sus dependencias.
+  He creado un spy para el provider el cual le he pasado como parámetro a un `ExchangeService`, lo que me permite checkear el conteo de llamadas dentro de dicha clase
 * Qué entrada proporcionas y qué salida verificas.
-
+Paso como argumentos cantidad de dinero y la misma moneda de origen y destino, esperando que me devuelva la misma cantidad que introduje
 Justifica por qué este test cumple con el concepto de prueba unitaria según el módulo 
 
 Incluye enlace al test.
 
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-alopgau/blob/dbaa3024453404e62a9a3e8cb32dd660336ad4f8/src/test/kotlin/RelacionMonedas.kt#L35-L39
+
 
 #### 🔹 3) CE g) Se han implementado pruebas automáticas
 
-**Pregunta:**
+**Pregunta:** Utilizo las librerias kotest para estructurar mis pruebas unitarias y sus aserciones, y mockK para crear mock() y spy() ambas implementadas a través de gradle. Los test se ejecutan con `./gradlew test` y con las propias aserciones que ya he menccionado es como verifico que el programa funciona correctamente
 
 Explica cómo se ejecuta tu batería de pruebas de forma automática:
 
@@ -441,11 +454,21 @@ Incluye enlace a:
 
 * configuración (build.gradle.kts o similar)
 * ejecución de tests
+  
+  <img width="1060" height="298" alt="image" src="https://github.com/user-attachments/assets/b09debea-8eea-4a21-8c28-ca98333d0ef1" />
+
+  https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-alopgau/blob/2aa22fade1365930f35d3b32666fb285793ea2ed/build.gradle.kts#L1-L24
+
+  Enlace al html con resultados de los test:
+  
+  https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-alopgau/blob/2aa22fade1365930f35d3b32666fb285793ea2ed/index.html
+
 
 
 #### 🔹 4) CE h) Se han documentado las incidencias detectadas
 
-**Pregunta:**
+**Pregunta:** Introduje un test que validaba si las monedas podian introducirse en minusucula. De esta forma, detecté que el sistema no convertia las minusuculas a mayuscula en ejecución, por lo que tuve que modificarlo introduciendo un .upper()
+Esto me ha hecho ver la importancia de testear el software para así poder detectar los errores a tiempo, ya sea antes de que el servicio salga a producción o el programa añada tantas funcionalidades que vayamos enterrando un error tras otro.
 
 Durante el desarrollo de la batería de pruebas, identifica **al menos una incidencia o comportamiento inesperado** que hayas detectado:
 
@@ -457,10 +480,30 @@ Relaciona esto con la importancia de documentar incidencias en el proceso de pru
 
 Incluye enlace al test implicado.
 
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-alopgau/blob/2aa22fade1365930f35d3b32666fb285793ea2ed/src/test/kotlin/ValidacionEntrada.kt#L68-L74
+
 
 #### 🔹 5) CE i) Se han utilizado dobles de prueba para aislar los componentes durante las pruebas
 
-**Pregunta:**
+**Pregunta:** El stub simplemente valida que la conversión directa funciona, el spy lo uso para comprobrar que en ningún momento se llama a rate() y el mock para verificar el orden de llamadas en la busqueda de las tasas. Si usaramos directamente la implementación y no un mock, tendriamos que estar creando un provider con su diccionario para cada test, lo que haria el proceso mucho más tedioso, además tampoco podriamos validar tan facilmente toda la gestion de excepciones
+
+Stub:
+
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-alopgau/blob/2aa22fade1365930f35d3b32666fb285793ea2ed/src/test/kotlin/RelacionMonedas.kt#L42-L45
+
+
+
+Spy:
+
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-alopgau/blob/2aa22fade1365930f35d3b32666fb285793ea2ed/src/test/kotlin/RelacionMonedas.kt#L35-L39
+
+
+
+
+Mock: 
+
+https://github.com/IES-Rafael-Alberti/2526-u5-5-3-exchangeservice-alopgau/blob/2aa22fade1365930f35d3b32666fb285793ea2ed/src/test/kotlin/BusquedaTasas.kt#L26-L84
+
 
 Analiza el uso de dobles de prueba en tu batería y explica:
 
