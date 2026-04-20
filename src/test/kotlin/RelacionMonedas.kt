@@ -28,32 +28,32 @@ class RelacionMonedas: DescribeSpec({
                 "USDGBP" to 0.73
                 ))
             val providerSpy = spyk(realProvider)
-            val serviceSpy = ExchangeService(providerSpy)
+            val service = ExchangeService(providerSpy)
             val providerMock = mockk<InMemoryExchangeRateProvider>()
             val serviceMock = ExchangeService(providerMock)
 
             it("Origen es igual a destino") {
-                serviceSpy.exchange(Money(1000, "USD"),"USD") shouldBe 1000
+                service.exchange(Money(1000, "USD"),"USD") shouldBe 1000
                 verify (exactly = 0) {providerSpy.rate("USDUSD")}
             }
 
 
             it("Origen distinto de destino (tasa directa)") {
+            every { providerMock.rate("USDEUR") } returns 0.92
                 serviceMock.exchange(Money(1000, "USD"),"EUR") shouldBe 920
-                verify (exactly = 1) {providerSpy.rate("USDEUR")}
 
 
             }
 
             it("Origen distinto de destino (ruta cruzada)") {
-                serviceSpy.exchange(Money(1000, "USD"),"JPY") shouldBe 605.9.toLong()
+                service.exchange(Money(1000, "USD"),"JPY") shouldBe 605.9.toLong()
                 verify ( exactly = 5) {providerSpy.rate(any())}
 
 
             }
             it("Conversion imposible") {
                 shouldThrow<IllegalArgumentException> {
-                serviceSpy.exchange(Money(1000, "EUR"),"JPY")
+                service.exchange(Money(1000, "EUR"),"JPY")
                 }
 
             }
