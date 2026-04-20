@@ -23,7 +23,7 @@ class BusquedaTasas: DescribeSpec({
     }
 
     describe("Tests evaluación busqueda tasas ") {
-
+    /* Mock en todo este area ya que verifico orden de llamadas */
         val mock = mockk<InMemoryExchangeRateProvider>()
         val service = ExchangeService(mock)
 
@@ -68,7 +68,7 @@ class BusquedaTasas: DescribeSpec({
             every { mock.rate("USDGBP") } throws IllegalArgumentException()
             every { mock.rate("GBPEUR") } throws IllegalArgumentException()
             shouldThrow<IllegalArgumentException> {
-            service.exchange(Money(100, "USD"), "EUR") shouldBe (100 * 2.0 * 0.5).toLong()
+            service.exchange(Money(100, "USD"), "EUR")
 
             }
 
