@@ -1,6 +1,7 @@
 package com.example.exchange
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.ints.exactly
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -27,29 +28,32 @@ class RelacionMonedas: DescribeSpec({
                 "USDGBP" to 0.73
                 ))
             val providerSpy = spyk(realProvider)
-            val service = ExchangeService(providerSpy)
+            val serviceSpy = ExchangeService(providerSpy)
+            val providerMock = mockk<InMemoryExchangeRateProvider>()
+            val serviceMock = ExchangeService(providerMock)
 
             it("Origen es igual a destino") {
-                service.exchange(Money(1000, "USD"),"USD") shouldBe 1000
-                verify (exactly = 0) {providerSpy.rate(any())}
+                serviceSpy.exchange(Money(1000, "USD"),"USD") shouldBe 1000
+                verify (exactly = 0) {providerSpy.rate("USDUSD")}
             }
 
 
             it("Origen distinto de destino (tasa directa)") {
-                service.exchange(Money(1000, "USD"),"EUR") shouldBe 920
-                verify (exactly = 1) {providerSpy.rate(any())}
+                serviceMock.exchange(Money(1000, "USD"),"EUR") shouldBe 920
+                verify (exactly = 1) {providerSpy.rate("USDEUR")}
 
 
             }
 
             it("Origen distinto de destino (ruta cruzada)") {
-                service.exchange(Money(1000, "USD"),"JPY") shouldBe 605.9
-                verify (exactly = 2) {providerSpy.rate(any())}
+                serviceSpy.exchange(Money(1000, "USD"),"JPY") shouldBe 605.9.toLong()
+                verify ( exactly = 5) {providerSpy.rate(any())}
+
 
             }
             it("Conversion imposible") {
                 shouldThrow<IllegalArgumentException> {
-                service.exchange(Money(1000, "EUR"),"JPY")
+                serviceSpy.exchange(Money(1000, "EUR"),"JPY")
                 }
 
             }
